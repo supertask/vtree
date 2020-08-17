@@ -15,6 +15,8 @@ import { visitAfter } from './util.js';
 
 const WIDTH = 960;
 const HEIGHT = 800;
+const SVG_WIDTH = 8000;
+const SVG_HEIGHT = 700;
 const MARGIN = 20;
 
 const DEFAULT_TREE_LAYOUT_HEIGHT = 50;
@@ -58,8 +60,10 @@ class VTree {
 
     this.d3.svg = this.d3.container.append('svg')
       .attr('class', 'vtree')
-      .attr('width', this._width)
-      .attr('height', this._height)
+      //.attr('width', this._width)
+      //.attr('height', this._height)
+      .attr('width', SVG_WIDTH)
+      .attr('height', SVG_HEIGHT)
       .call(this.d3.zoomListener);
   }
 

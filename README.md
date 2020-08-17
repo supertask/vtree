@@ -10,3 +10,12 @@ This tool converts JSON strings into tree diagrams. For example, it is used to s
 
 
 ![Screenshot](https://github.com/ivan111/vtree/raw/master/vtree.jpg)
+
+
+## How to install
+
+```
+npm install #install packages
+npm run build #build src/ and generate dist/vtree.js
+```
+
