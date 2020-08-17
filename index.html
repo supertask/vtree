@@ -5,10 +5,12 @@
 
 <title>Online JSON to Tree Diagram Converter</title>
 
-<link rel="stylesheet" href="css/vtree.css" type="text/css"/>
+<link rel="stylesheet" href="static/css/vtree.css" type="text/css"/>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="dist/vtree.js"></script>
+<script type="text/javascript" src="static/js/lib/yaml.min.js"></script>
 
 <!-- How to use debug mode.
   1. open browser's developer tools.
@@ -25,31 +27,49 @@ window.onload = function () {
   vt = new VTree(container);
   var reader = new VTree.reader.Object();
 
-  function updateTree() {
-    var s = document.getElementById("from-text").value;
+  function updateTree(isJson) {
+    var json = null;
+    if (isJson) {
+        var jsonText = document.getElementById("from-json-text").value;
+        try {
+          json = JSON.parse(jsonText);
+        } catch (e) {
+          msg.innerHTML = 'JSON parse error: ' + e.message;
+        }
 
-    msg.innerHTML = '';
-
-    try {
-      var jsonData = JSON.parse(s);
-    } catch (e) {
-      msg.innerHTML = 'JSON parse error: ' + e.message;
+    } else {
+        var yamlText = document.getElementById("from-yaml-text").value;
+        try {
+          json = YAML.parse(yamlText);
+        } catch (e) {
+          msg.innerHTML = 'YAML parse error: ' + e.message;
+        }
     }
 
-    var data = reader.read(jsonData);
-
-    vt.data(data)
-      .update();
+    msg.innerHTML = '';
+    var data = reader.read(json);
+    vt.data(data).update();
   }
 
   function createSvgString() {
     document.getElementById("svg-text").value = vt.createSvgString();
   }
 
-  document.getElementById("go-button").onclick = updateTree;
-  document.getElementById("svg-button").onclick = createSvgString;
 
-  updateTree();
+  //document.getElementById("go-button").onclick = updateTreeFromJson;
+  document.getElementById("visualize-json-svg").onclick = function() {
+    updateTree(true);
+  }
+
+  document.getElementById("visualize-yaml-svg").onclick = function() {
+    updateTree(false);
+  }
+
+  document.getElementById("get-svg").onclick = function() {
+    createSvgString();
+  }
+
+  updateTree(true);
 };
 
 </script>
@@ -64,27 +84,44 @@ window.onload = function () {
     <p style="text-align: right;"><a href="https://github.com/ivan111/vtree">github</a></p>
 
     <div style="margin-top: 1em;">
-      <label for="from-text">JSON</label><br>
-      <textarea id="from-text" rows="6" cols="80">[{ "array": [ 1, 2, [3, 4], 5 ], "boolean": true, "null": null, "number": 123, "object": { "a": "b", "c": "d", "e": "f" }, "string": "Hello World" }, { "|": "|", "  ": { "ʕ": "" }, " ": ["◕", [ { "hello! ": "<ﾆフ" } ], "◕"], "_": { "": "ʔ" } }]</textarea>
+      <label for="from-json-text">JSON</label><br>
+      <textarea id="from-json-text" rows="6" cols="80">{
+  "color_list": [ "red", "green", "blue" ],
+  "array_list": [ [ 12, 23 ], [ 34, 45 ], [ 56, 67 ] ],
+  "object_list": [
+      { "name": "John", "age": 26 },
+      { "name": "Dana", "age": 28 }
+  ]
+}</textarea>
+    </div>
+    <div style="margin-top: 0em;">
+      <input id="visualize-json-svg" type="button" value="Visualize SVG from json">
     </div>
 
-    <div style="margin-top: 1em;">
-      <input id="go-button" type="button" value="Visualize">
+    <div style="margin-top: 2em;">
+      <label for="from-yaml-text">YAML</label><br>
+      <textarea id="from-yaml-text" rows="6" cols="80">key: value</textarea>
+    </div>
+
+    <div style="margin-top: 0em;">
+      <input id="visualize-yaml-svg" type="button" value="Visualize SVG from yaml">
     </div>
 
     <div id="msg" style="color: red;"></div>
 
-    <div style="margin-top: 1em;">
-      <input id="svg-button" type="button" value="Get SVG String">
-    </div>
-
-    <div style="margin-top: 1em;">
+    <div style="margin-top: 2em;">
+      <h2>SVG text</h2>
       <p>If you want to export the diagram as a svg file, copy the following text into a text editor and save the file with a .svg extension.</p>
       <textarea id="svg-text" rows="6" cols="80"></textarea>
     </div>
 
+    <div style="margin-top: 0em;">
+      <input id="get-svg" type="button" value="Get SVG">
+    </div>
+
+
     <!-- canvas  -->
-    <div id="container" width="800px" height="500px"></div>
+    <div id="container" style="margin-top: 2em;" width="800px" height="500px"></div>
 
 
     <p style="text-align: right;">Created Date: 2014-07-27, Modified Date: 2018-11-01</p>

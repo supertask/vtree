@@ -19,3 +19,8 @@ npm install #install packages
 npm run build #build src/ and generate dist/vtree.js
 ```
 
+## How to run
+
+```
+open index.html
+```
